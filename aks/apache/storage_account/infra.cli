@@ -1,8 +1,14 @@
 RG_NAME=aks-playground
-SA_NAME=alpha
+SA_NAME=sa
 AZ_REGION=swedencentral
-SHARE_NAME=web_files
+SHARE_NAME=webfilesalpha
 FILE_NAME=index.html
+
+generate_random_string() {
+    local length=12
+    tr -dc 'a-z' < /dev/urandom | head -c $length
+}
+SA_NAME="$SA_NAME$(generate_random_string)"
 
 az storage account create \
   --name $SA_NAME \
