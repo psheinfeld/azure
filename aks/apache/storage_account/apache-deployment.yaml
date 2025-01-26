@@ -29,5 +29,5 @@ spec:
           readOnly: false
           volumeAttributes:
             shareName: webfilesalpha
-          secretRef:
+          nodePublishSecretRef:
             name: azure-secret
