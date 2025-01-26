@@ -1,6 +1,6 @@
-RG_NAME=aks-demo-azure-overlay
+RG_NAME=aks-playground
 AZ_REGION=swedencentral
-VNET_NAME=AKSNET
+VNET_NAME=AKS-NET
 VNET_CIDR=172.16.0.0/12
 SUBNET_NAME=aks-alpha
 SUBNET_CIDR=172.16.0.0/24
