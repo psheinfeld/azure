@@ -30,12 +30,13 @@ spec:
         volumeMounts:
         - name: azurefile
           mountPath: /usr/local/apache2/htdocs
+          readOnly: true
       volumes:
       - name: azurefile
         csi:
           driver: file.csi.azure.com
           readOnly: false
           volumeAttributes:
+            secretName: azure-secret
             shareName: webfilesalpha
-          nodePublishSecretRef:
-            name: azure-secret
+            mountOptions: 'dir_mode=0777,file_mode=0777,cache=strict,actimeo=30,nosharesock,nobrl'  # optional
