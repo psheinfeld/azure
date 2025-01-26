@@ -1,0 +1,39 @@
+RG_NAME=aks-playground
+SA_NAME=alpha
+AZ_REGION=swedencentral
+SHARE_NAME=web_files
+FILE_NAME=index.html
+
+az storage account create \
+  --name $SA_NAME \
+  --resource-group $RG_NAME \
+  --location $AZ_REGION \
+  --sku Standard_LRS
+
+az storage share create \
+  --account-name $SA_NAME \
+  --name $SHARE_NAME
+
+echo '<!DOCTYPE html>
+<html>
+<head>
+    <title>Apache on AKS</title>
+</head>
+<body>
+    alpha
+</body>
+</html>' > $FILE_NAME
+
+az storage file upload \
+  --account-name $SA_NAME \
+  --share-name $SHARE_NAME \
+  --source ./$FILE_NAME
+
+STORAGE_KEY=$(az storage account keys list \
+  --resource-group $RG_NAME \
+  --account-name $SA_NAME \
+  --query '[0].value' -o tsv)
+
+kubectl create secret generic azure-secret \
+  --from-literal=azurestorageaccountname=$SA_NAME \
+  --from-literal=azurestorageaccountkey=$STORAGE_KEY
