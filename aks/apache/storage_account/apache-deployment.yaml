@@ -28,6 +28,6 @@ spec:
           driver: file.csi.azure.com
           readOnly: false
           volumeAttributes:
-            shareName: myfileshare
-          nodeStageSecretRef:
+            shareName: webfilesalpha
+          secretRef:
             name: azure-secret
