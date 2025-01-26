@@ -1,16 +1,38 @@
 RG_NAME=aks-demo-azure-overlay
 AZ_REGION=swedencentral
+VNET_NAME=AKSNET
+VNET_CIDR=172.16.0.0/12
+SUBNET_NAME=aks-alpha
+SUBNET_CIDR=172.16.0.0/24
 AKS_NAME=aks-azure-overlay
 NETWORK_PLUGIN=azure
 NETWORK_PLUGIN_MODE=overlay
 
 az group create --name $RG_NAME --location $AZ_REGION
+
+az network vnet create \
+  --resource-group $RG_NAME \
+  --name $VNET_NAME \
+  --address-prefix $VNET_CIDR
+
+az network vnet subnet create \
+  --resource-group $RG_NAME \
+  --vnet-name $VNET_NAME \
+  --name $SUBNET_NAME \
+  --address-prefix $SUBNET_CIDR
+
+SUBNET_ID=$(az network vnet subnet show \
+  --resource-group $RG_NAME \
+  --vnet-name $VNET_NAME \
+  --name $SUBNET_NAME \
+  --query id -o tsv)
+
 az aks create \
   --resource-group $RG_NAME \
   --name $AKS_NAME \
   --node-count 1 \
   --network-plugin $NETWORK_PLUGIN \
   --network-plugin-mode $NETWORK_PLUGIN_MODE \
-  --enable-private-cluster \
+  --vnet-subnet-id $SUBNET_ID \
   --load-balancer-sku standard \
   --generate-ssh-keys
