@@ -1,0 +1,16 @@
+RG_NAME=aks-demo-azure-overlay
+AZ_REGION=swedencentral
+AKS_NAME=aks-azure-overlay
+NETWORK_PLUGIN=azure
+NETWORK_PLUGIN_MODE=overlay
+
+az group create --name $RG_NAME --location $AZ_REGION
+az aks create \
+  --resource-group $RG_NAME \
+  --name $AKS_NAME \
+  --node-count 1 \
+  --network-plugin $NETWORK_PLUGIN \
+  --network-plugin-mode $NETWORK_PLUGIN_MODE \
+  --enable-private-cluster \
+  --load-balancer-sku standard \
+  --generate-ssh-keys
