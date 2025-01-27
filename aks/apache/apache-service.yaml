@@ -13,7 +13,22 @@ spec:
       port: 80
       targetPort: 80
   type: LoadBalancer
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apache-service-internal-2
+  namespace: apache
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  selector:
+    app: apache
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
 ---
 apiVersion: v1
 kind: Service
