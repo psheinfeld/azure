@@ -51,8 +51,8 @@ resource "azurerm_linux_virtual_machine" "alb-chain" {
 
   source_image_reference {
     publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "24.04-LTS"
+    offer     = "ubuntu-24_04-lts"
+    sku       = "server"
     version   = "latest"
   }
 
@@ -62,7 +62,7 @@ resource "azurerm_linux_virtual_machine" "alb-chain" {
 
   admin_ssh_key {
     username   = "adminuser"
-    public_key = file("~/.ssh/id_rsa.pub")
+    public_key = var.ssh_public_key
   }
 
   tags = {
