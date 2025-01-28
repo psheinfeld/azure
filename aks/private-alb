@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: internal-app
   annotations:
-    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    service.beta.kubernetes.io/azure-load-balancer-internal: "false"
 spec:
   type: LoadBalancer
   ports:
