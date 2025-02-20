@@ -1,2 +1,5 @@
 secured_*
 environment_*
+*.tfstate*
+*.lock.hcl
+*.terraform*
