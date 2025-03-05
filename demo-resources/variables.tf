@@ -1,21 +1,3 @@
-variable "create_vm" {
-  description = "Do you want to create a VM? (yes/no)"
-  type        = string
-  default     = "no"
-}
-
-variable "vm_size" {
-  description = "The size of the VM? (eg. Standard_D2s_v3)"
-  type        = string
-  default     = "Standard_D2s_v3"
-}
-
-variable "number_of_vms" {
-  description = "The number of VMs to create"
-  type        = number
-  default     = 1
-}
-
 variable "ssh_public_key" {
   description = "The public SSH key to use for the VM"
   type        = string
@@ -52,40 +34,66 @@ variable "vnet_address_space" {
 
 variable "subnets" {
   description = "Map of subnet names and their sizes, (e.g. vms=25, db=25, aks=8, web=8)"
-  type        = map(number)
+  type        = map(object({
+    size       = number
+    default_outbound_access_enabled  = bool
+    nsg_rules = optional(list(string),[])
+    delegation = optional(object({
+      name = string
+      service_delegation = object({
+        name    = string
+        actions = list(string)
+      })
+    }))
+  }))
   default     = {
-    vms = 25
-    db  = 25
-    aks = 24
-    web = 23
+    vm = {size = 24 , nsg_rules=["allow_ssh_from_anywhere","allow_80"] ,  default_outbound_access_enabled = false}
+    db = {size = 25 , default_outbound_access_enabled = false} 
+    aks = {size = 23 , default_outbound_access_enabled = false}
   }
 }
 
-# variable "network_security_group_rules" {
-#   description = "Map of network security group rules"
-#   type        = list(map(object({
-#     name                       = string
-#     priority                   = number
-#     direction                  = string
-#     access                     = string
-#     protocol                   = string
-#     source_port_range          = string
-#     destination_port_range     = string
-#     source_address_prefix      = string
-#     destination_address_prefix = string
-#   })))
-#   default     = (
-#     allow_ssh = {
-#       name                       = "AllowSSH"
-#       priority                   = 1001
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "22"
-#       source_address_prefix      = "*"
-#       destination_address_prefix = "*"
-#     }
-#   )
-# }
-
+variable "virtual_machines" {
+  description = "Map of VM names and their sizes"
+  type        = map(object({
+    name        = string
+    size       = string
+    subnet_name = string
+    username    = optional(string, "auser")
+    public_ip  = optional(bool, false)
+    source_image_reference = optional(object({
+      publisher = string
+      offer     = string
+      sku       = string
+      version   = string
+    }))
+    cloud_init = optional(object({
+      user_data = string
+    }))
+  }))
+  default = {
+    "apache" = {
+      name        = "apache"
+      size        = "Standard_D2s_v3"
+      subnet_name = "vm"
+      public_ip   = true
+      source_image_reference = {
+        publisher = "Canonical"
+        offer     = "0001-com-ubuntu-server-focal"
+        sku       = "20_04-lts-gen2"
+        version   = "latest"
+      }
+      # source_image_reference = {
+      #   publisher = "Canonical"
+      #   offer     = "ubuntu-24_04-lts"
+      #   sku       = "server"
+      #   version   = "latest"
+      # }
+      
+      cloud_init = {
+        user_data = "cloud-init/apache.yaml"
+      }
+    }
+  }
+  
+}
